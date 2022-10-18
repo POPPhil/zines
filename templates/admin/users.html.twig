@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Admin !{% endblock %}
+
+{% block javascripts %}
+    {# Récupère le contenu de block "javascripts" de la base.html.twig pour éviter que son contenu ne soit écrasé par celui-ci #}
+    {{ parent() }}
+    <script src="{{ asset('js/changeRole.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+        <!-- Contenu -->
+        <main class="p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex">
+                        <div class="col-6 d-flex text-start">
+                                <h2 class="fs-3 text-danger">Liste des utilisateurs</h2>
+                        </div>
+                        {% if users is not null %}
+                            <div class="col-6 d-flex justify-content-end my-auto gap-2">
+                                <form methode="GET" class="my-auto">
+                                    <input type="hidden" name="page" value="{{ app.request.query.get('page', 1) }}">
+                                    <select class="form-select" name="numbers" id="numbers" onchange="this.form.submit();">
+                                        <option value="6">Nombres d'utilisateurs par page</option>
+                                        <option value="6">6 par page</option>
+                                        <option value="12">12 par page</option>
+                                        <option value="18">18 par page</option>
+                                    </select>
+                                </form>
+                                
+                            </div>
+                        {% else %}
+                            <div class="col-6 d-flex justify-content-end">
+                                <a href="{{ path('app_home') }}" class="btn btn-outline-danger my-auto">retour</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 d-block border-bottom my-3"></div>
+                    <div class="col-12 d-flex mt-1">
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center text-secondary">#</p>
+                        </div>
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center">Nom</p>
+                        </div>
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center">prénom</p>
+                        </div>
+                        <div class="col-2 m-auto">
+                            <p class="fw-bold text-center">Email</p>
+                        </div>
+                        <div class="col-2 m-auto">
+                            <p class="fw-bold text-center">Rôle</p>
+                        </div>
+                        <div class="col-5 m-auto">
+                            <p class="fw-bold text-center">Actions</p>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom mb-2"></div>
+
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success my-2">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('suppress') %}
+                            <div class="alert alert-danger">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                        
+                        {% for user in users %}
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-1 m-auto">
+                                    <p class="text-center text-secondary">{{user.id}}</p>
+                                </div>
+                                <div class="col-1 m-auto">
+                                    <p class="text-center text-secondary">{{user.lastName}}</p>
+                                </div>
+                                <div class="col-1 m-auto">
+                                    <p class="text-center text-secondary">{{user.firstName}}</p>
+                                </div>
+                                <div class="col-2 m-auto">
+                                    <p class="text-center text-secondary">{{user.email}}</p>
+                                </div>
+                                 
+                                <div class="col-2 m-auto">
+                                    <p class="text-center text-secondary" id="roles_{{ user.id }}">
+                                    
+                                    {{ user.roles|first }}
+
+                                    {# {% for role in user.roles %}
+                                        {% if (role == 'ROLE_USER') %}
+                                            Utilisateur
+                                        {% elseif (role == 'ROLE_MODERATOR') %}
+                                            Modérateur
+                                        {% elseif (role == 'ROLE_ADMIN') %}
+                                            Administrateur
+                                        {% endif %}
+                                    {% endfor %} #}
+
+                                    </p>
+                                </div>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <div class="col-5 d-flex justify-content-center pb-3 gap-2">
+                                        <div class="btn-group">
+                                            <button data-id="{{ user.id }}" data-role="ROLE_ADMIN" class="btn btn-outline-warning">Administrateur</button>
+                                            <button data-id="{{ user.id }}" data-role="ROLE_MODERATOR" class="btn btn-outline-danger">Modérateur</button>
+                                            <button data-id="{{ user.id }}" data-role="ROLE_USER" class="btn btn-outline-secondary">Utilisateur</button>
+                                        </div>
+
+                                        <a href="{{ path('app_admin_user_edit', {id:user.id}) }}" class="btn btn-outline-success">Modifier</a>
+
+                                        <a href="# {# {{ path('app_admin_user_edit', {id:user.id}) }} #}" class="btn btn-outline-danger">Éxclure</a>
+                                    </div>
+                                {% else %}
+                                    <div class="col-5 d-flex justify-content-center pb-3">
+                                        <a href="# {# {{ path('app_admin_user_edit', {id:user.id}) }} #}" class="btn btn-outline-danger m-auto">Éxclure</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-8 m-auto">
+                                    <p class="text-center">Tableau vide</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-center pb-3">
+                                    <a href="https://www.youtube.com/watch?v=iik25wqIuFo" class="btn btn-outline-warning m-auto">Quitter la page</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        {% if users is not null %}
+                            <div class="d-flex">
+                                <div class="mx-auto">
+                                    {{ knp_pagination_render(users) }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </main>
+
+{% endblock %}

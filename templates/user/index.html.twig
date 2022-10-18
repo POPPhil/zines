@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello User !{% endblock %}
+
+{% block body %}
+
+        <!-- Contenu -->
+        <main class="p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex">
+                        <div class="col-11 d-flex text-start">
+                                <h2 class="fs-3 text-danger">Vos informations</h2>
+                        </div>
+                        <div class="col-1 d-flex justify-content-end">
+                            <a href="{{ path('app_home') }}" class="btn btn-outline-danger my-auto">retour</a>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom my-3"></div>
+                    <div class="col-12 d-flex mt-1">
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center text-secondary">#</p>
+                        </div>
+                        <div class="col-3 m-auto">
+                            <p class="fw-bold text-center">Nom</p>
+                        </div>
+                        <div class="col-3 m-auto">
+                            <p class="fw-bold text-center">prénom</p>
+                        </div>
+                        <div class="col-3 m-auto">
+                            <p class="fw-bold text-center">Adresse email</p>
+                        </div>
+                        <div class="col-2 m-auto">
+                            <p class="fw-bold text-center">Actions</p>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom mb-2"></div>
+                        <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                            <div class="col-1 m-auto">
+                                <p class="text-center text-secondary">{{app.user.id}}</p>
+                            </div>
+                            <div class="col-3 m-auto">
+                                <p class="text-center text-secondary">{{app.user.lastName}}</p>
+                            </div>
+                            <div class="col-3 m-auto">
+                                <p class="text-center text-secondary">{{app.user.firstName}}</p>
+                            </div>
+                            <div class="col-3 m-auto">
+                                <p class="text-center text-secondary">{{app.user.email}}</p>
+                            </div>
+                            <div class="col-2 d-flex justify-content-center pb-3">
+                                <a href="# {# {{ path('app_user_edit', {id:app.user.id}) }} #}" class="btn btn-outline-success m-auto">Modifier</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+{% endblock %}

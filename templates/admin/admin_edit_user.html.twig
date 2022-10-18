@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello You !{% endblock %}
+
+{% block body %}
+
+        <!-- Contenu -->
+        <main class="p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex">
+                        <div class="col-6 d-flex text-start">
+                            <h2 class="fs-3">Modifier l'utilisateur <span class="text-danger">{{ user.lastName }} {{ user.firstName }}</span></h2>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <a href="{{ path('app_admin_users') }}" class="btn btn-outline-danger my-auto">retour</a>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom my-3"></div>
+                    <div class="w-50 mx-auto py-5">                           
+                        
+                        {{ form(form) }}
+
+                    </div>
+                </div>
+            </div>
+        </main>
+
+{% endblock %}

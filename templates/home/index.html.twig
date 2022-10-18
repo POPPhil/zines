@@ -1,0 +1,214 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello You !{% endblock %}
+
+{% block body %}
+
+        <!-- Contenu -->
+        <main class="p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex">
+                        
+                        {% if magazines is not null %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <div class="col-6 d-flex text-start">
+                                    <h2 class="fs-3 text-danger">Liste des Magazines</h2>
+                                </div>
+                                <div class="col-6 d-flex justify-content-end gap-2">
+                                    <a href="{{ path('app_add_magazine') }}" class="btn btn-outline-success my-auto">Ajouter une Magazine</a>
+                                    {# Ajout d'un selecteur d'affichage du nombre de magazines par page #}
+                                    <form methode="GET" class="my-auto">
+                                        <input type="hidden" name="page" value="{{ app.request.query.get('page', 1) }}">
+                                        <select class="form-select" name="numbers" id="numbers" onchange="this.form.submit();">
+                                            <option value="5">Nombres de magazines par page</option>
+                                            <option value="5">5 par page</option>
+                                            <option value="10">10 par page</option>
+                                            <option value="15">15 par page</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <div class="col-6 d-flex text-start">
+                                    <h2 class="fs-3 text-danger">Liste des Magazines</h2>
+                                </div>
+                                {# Ajout d'un selecteur d'affichage du nombre de magazines par page #}
+                                <div class="col-6 d-flex justify-content-end">
+                                    <form methode="GET" class="my-auto">
+                                        <input type="hidden" name="page" value="{{ app.request.query.get('page', 1) }}">
+                                        <select class="form-select" name="numbers" id="numbers" onchange="this.form.submit();">
+                                            <option value="5">Nombres de magazines par page</option>
+                                            <option value="5">5 par page</option>
+                                            <option value="10">10 par page</option>
+                                            <option value="15">15 par page</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <div class="col-6 d-flex text-start">
+                                    <h2 class="fs-3 text-danger">Liste des Magazines</h2>
+                                </div>
+                                <div class="col-6 d-flex justify-content-end">
+                                    <a href="{{ path('app_add_magazine') }}" class="btn btn-outline-success my-auto">Ajouter une Magazine</a>
+                                </div>
+                            {% else %}
+                                <div class="col-12 d-flex text-start">
+                                    <h2 class="fs-3 text-danger">Liste des Magazines</h2>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                    <div class="col-12 d-block border-bottom my-3"></div>
+                    <div class="col-12 d-flex mt-1">
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center text-secondary">#</p>
+                        </div>
+                        <div class="col-2 m-auto">
+                            <p class="fw-bold text-center">Image</p>
+                        </div>
+                        <div class="col-4 m-auto">
+                            <p class="fw-bold text-center">Nom</p>
+                        </div>
+                        <div class="col-2 m-auto">
+                            <p class="fw-bold text-center">Prix</p>
+                        </div>
+                        <div class="col-3 m-auto">
+                            <p class="fw-bold text-center">Actions</p>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom mb-2"></div>
+
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success my-2">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('suppress') %}
+                            <div class="alert alert-danger">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
+                        {% for magazine in magazines %}
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-1 m-auto">
+                                    <p class="text-center text-secondary">{{magazine.id}}</p>
+                                </div>
+
+                                {% if magazine.cover is not null %}
+                                    <div class="col-2 d-flex justify-content-center m-auto">
+                                        <img src="{{ vich_uploader_asset(magazine, 'coverFile')|imagine_filter('thumbnail') }}" alt="Image du magazine {{magazine.name}}" class="img-fluid rounded mb-3">
+                                    </div>
+                                {% else %}
+                                    <div class="col-2 d-flex justify-content-center m-auto">
+                                        <img src="{{ asset('imgs/blank.png')|imagine_filter('thumbnail') }}" alt="Pas d'image" class="img-fluid rounded mb-3">
+                                    </div>
+                                {% endif %}
+                                <div class="col-4 m-auto">
+                                    <p class="text-center">{{magazine.name}}</p>
+                                </div>
+                                <div class="col-2 m-auto">
+                                    <p class="text-center">{{magazine.price}} €</p>
+                                </div>
+                                {% if is_granted('ROLE_MODERATOR') %}
+                                    <div class="col-3 d-flex justify-content-center m-auto gap-2">
+
+                                        <a href="{{ path('app_magazine', {id:magazine.id}) }}" class="btn btn-outline-warning mb-3">Détails</a>
+                                        <a href="{{ path('app_edit_magazine', {id:magazine.id}) }}" class="btn btn-outline-success mb-3">Editer</a>
+
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        {# <a href="{{ csrf_token('delete-magazine-'~ magazine.id) }}{{ path('app_magazine_suppress', {id:magazine.id}) }}" method="post" id="suppressBtn"> #}
+                                        <form action="{{ path('app_magazine_suppress', {id:magazine.id}) }}" method="post" class="m-0 p-0">
+                                            <input type="hidden" name="token" value="{{ csrf_token('delete-magazine-'~ magazine.id) }}" class="m-0 p-0">
+                                            <button class="btn btn-outline-danger mx-auto mb-3">Supprimer</button>
+                                        </form>
+                                        {# </a> #}
+                                    {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="col-3 d-flex justify-content-center m-auto">
+                                        <a href="{{ path('app_magazine', {id:magazine.id}) }}" class="btn btn-outline-warning mb-3">Détails</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-8 m-auto">
+                                    <p class="text-center">Tableau vide</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-center pb-3">
+                                    <a href="https://www.youtube.com/watch?v=iik25wqIuFo" class="btn btn-outline-warning m-auto">Quitter la page</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        {% if magazines is not null %}
+                            <div class="d-flex">
+                                <div class="mx-auto">
+                                    {{ knp_pagination_render(magazines) }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                </div>
+            </div>
+
+        {# <script>
+                
+                /**
+                 * Suppression d'article via modal Bootstrap
+                 */
+
+                // Récupère le bouton de suppression d'un article
+                const suppressBtn = document.querySelectorAll('#suppressBtn');
+
+                // Boucle sur tous les boutons comportant la classe CSS "btnDelete"
+                suppressBtn.forEach(btn => {
+                    
+                    // Écouteur d'évènement sur le bouton au click
+                    btn.addEventListener('click', (event) => {
+
+                        // Empêche le comportement par défaut du lien hypertexte
+                        event.preventDefault();
+
+                        // Récupère le bouton de suppression de la modale vie une classe CSS
+                        const modalDelete = document.querySelector('#suppressModalYes');
+
+                        // Attribue la valeur du href du bouton au bouton de suppression de la modale
+                        modalDelete.href = btn.href;
+
+                        // Récupération de la modale
+                        const modal = new bootstrap.Modal(document.querySelector('#suppressModal'));
+
+                        // Ouverture de la modale Bootstrap
+                        modal.show();
+                    });
+                })
+
+            </script>
+
+            <div class="modal fade" id="suppressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confrimation de suppression<span class="text-danger"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes vous certain de vouloir supprimer ? Cette action est irréverssible ! 
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ path('app_home') }}" class="btn btn-secondary" data-bs-dismiss="modal">Ferme</a>
+                        <a href="" class="btn btn-danger" id="suppressModalYes">Confrimer la suppression</a>
+                    </div>
+                    </div>
+                </div>
+            </div> #}
+
+        </main>
+
+{% endblock %}

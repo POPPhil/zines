@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello You !{% endblock %}
+
+{% block body %}
+
+        <!-- Contenu -->
+        <main class="p-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex">
+                        
+                        {% if stocks is not null %}
+                            <div class="col-6 d-flex text-start">
+                                <h2 class="fs-3 text-danger">Liste des stocks</h2>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end my-auto gap-2">
+                                <form methode="GET" class="my-auto">
+                                    <input type="hidden" name="page" value="{{ app.request.query.get('page', 1) }}">
+                                    <select class="form-select" name="numbers" id="numbers" onchange="this.form.submit();">
+                                        <option value="6">Nombres de categories par page</option>
+                                        <option value="6">6 par page</option>
+                                        <option value="12">10 par page</option>
+                                        <option value="18">15 par page</option>
+                                    </select>
+                                </form>
+
+                        {% else %}
+
+                                <h2 class="fs-3 text-danger">Liste des stocks</h2>
+
+                        {% endif %}
+
+                            <a href="{{ path('app_home') }}" class="btn btn-outline-danger my-auto">retour</a>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom my-3"></div>
+                    <div class="col-12 d-flex mt-1">
+                        <div class="col-1 m-auto">
+                            <p class="fw-bold text-center text-secondary">#</p>
+                        </div>
+                        <div class="col-4 m-auto">
+                            <p class="fw-bold text-center">Nom</p>
+                        </div>
+                        <div class="col-4 m-auto">
+                            <p class="fw-bold text-center">Référence</p>
+                        </div>
+                        <div class="col-3 m-auto">
+                            <p class="fw-bold text-center">Actions</p>
+                        </div>
+                    </div>
+                    <div class="col-12 d-block border-bottom mb-2"></div>
+
+                        {% for stock in stocks %}
+
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-1 m-auto">
+                                    <p class="text-center text-secondary">{{stock.id}}</p>
+                                </div>
+                                <div class="col-4 m-auto">
+                                    <p class="text-center text-secondary">{{stock.name}}</p>
+                                </div>
+                                <div class="col-4 m-auto">
+                                    <p class="text-center text-secondary">{{stock.place}}</p>
+                                </div>
+                                <div class="col-3 d-flex justify-content-center pb-3">
+                                    <a href="{{ path('app_magazine', {id:stock.id}) }}" class="btn btn-outline-warning mb-3">Détails</a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-12 d-flex mb-3 mt-2 border-bottom">
+                                <div class="col-8 m-auto">
+                                    <p class="text-center">Tableau vide</p>
+                                </div>
+                                <div class="col-4 d-flex justify-content-center pb-3">
+                                    <a href="https://www.youtube.com/watch?v=iik25wqIuFo" class="btn btn-outline-warning m-auto">Quitter la page</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    {% if stocks is not null %}
+                        <div class="d-flex">
+                            <div class="mx-auto">
+                                {{ knp_pagination_render(stocks) }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </main>
+
+{% endblock %}
